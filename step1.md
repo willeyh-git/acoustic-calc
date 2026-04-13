@@ -1,343 +1,326 @@
-# Step 1: Complete Core Domain & Math Engine
+# Step 1: Complete Core Domain & Math Engine - STATUS UPDATE
 
-## Status Overview
+## ✅ COMPLETED (As of April 2026)
 
-The first major item from plan.md needs completion. Here's what exists vs what's missing.
+### Panel Types Implemented
+
+#### ✅ QRD (Quadratic Residue Diffuser) - FULLY IMPLEMENTED
+**File:** `src/core/math/qrd.ts`
+
+**Functions:**
+- `generateQrdSequence(prime: number)` - Generates sequence using `(n * n) % prime`
+- `computeQrdDepths(sequence, wavelength, maxDepth?)` - Calculates depths for each well
+- `computeQrd(prime, designFrequency, wellWidth, maxDepth?, speedOfSound?)` - Main computation function
+
+**Returns:** `QrdResult` with sequence, depths, wavelength, and diffusion range
+
+#### ✅ PRD (Power Ratio Difference) - FULLY IMPLEMENTED  
+**File:** `src/core/math/prd.ts`
+
+**Functions:**
+- `computePRDFromQrd(prime, designFrequency, wellWidth, maxDepth?, speedOfSound?)` - Main computation
+- `validatePRDResults(result)` - Validates PRD results and returns errors
+- `computePowerRatio(depth, speedOfSound, wellWidth)` - Helper function
+
+**Returns:** `PRDResult` with power ratio, diffusion range, and wavelength
+
+#### ✅ Skyline (2D QRD Pattern) - FULLY IMPLEMENTED
+**File:** `src/core/math/skyline.ts`
+
+**Functions:**
+- `generateSkylineSequence(gridSize, modulus)` - Generates 2D skyline pattern
+- `computeSkylineDepths(sequence, wavelength, gridSize, maxDepth?)` - Computes depths for each well
+- `computeSkyline(gridSize, designFrequency, wellWidth, maxDepth?, speedOfSound?)` - Main computation
+
+**Returns:** `SkylineResult` with 2D sequence, depths array, wavelength, and diffusion range
+
+#### ⚠️ Abfusor (Binary Amplitude Diffuser) - IMPLEMENTED but NOT INTEGRATED
+**File:** `src/core/math/abfusor.ts`
+
+**Functions:**
+- `generateAbfusor(pattern, wavelength, depthA, depthB)` - Main computation function
+- `validateAbfusorResults(result)` - Validates binary pattern results
+
+**Returns:** `AbfusorResult` with sequence, depthsA, depthsB, and diffusionRange
+
+**Status:** Math is complete but not integrated into the factory/building system yet.
 
 ---
 
-## ✅ Already Implemented
+### Parameter Schemas - COMPLETE
 
-### Panel Types (3/6)
-- [x] **QRD** - Quadratic Residue Diffuser (1D)
-  - `src/core/math/qrd.ts`
-  - Sequence generation: `(n * n) % prime`
-  - Depth calculation based on wavelength
-  
-- [x] **PRD** - Power Ratio Difference  
-  - `src/core/math/prd.ts`
-  - Calculates power ratio distribution across depths
-  - Validation included
+#### ✅ Type Definitions
+**File:** `src/core/types/panelTypes.ts`
 
-- [x] **Skyline** - 2D QRD Pattern
-  - `src/core/math/skyline.ts`
-  - Skyline matrix generator with row offsets
-  - Depth computation for 2D grid
+- `QrdParams` - prime, designFrequency, wellWidth, maxDepth, speedOfSound
+- `SkylineParams` - gridSize, prime, designFrequency, wellWidth, maxDepth
+- `AbfusorParams` - pattern (binary), depthA, depthB
+- `AbsorberParams` - absorberType (porous|helmholtz), cavityDepth, holeDiameter, holeSpacing
 
-### Parameter Schemas (Partial)
-- [x] General dimensions (`width`, `height`, `depth`)
-- [x] Material thickness, well width, max depth
-- [x] QRD: prime number N, design frequency, speed of sound
-- [x] Skyline: 2D grid size
-- [ ] Abfusor: binary sequence / custom pattern (defined but no math)
-- [ ] Absorbers: cavity depth, hole size/spacing (defined but no math)
+#### ✅ Base Types
+**File:** `src/core/types/types.ts`
 
-### Math Engine Functions
-- [x] QRD sequence generator (`generateQrdSequence`)
-- [x] PRD calculation (`computePRDFromQrd`, `validatePRDResults`)
-- [x] Depth calculations for QRD and Skyline
-- [x] Frequency ↔ wavelength conversion
-- [x] Comprehensive validation rules (`src/core/math/validation.ts`)
-
-### Utilities & Helpers
-- [x] `DEFAULT_SPEED_OF_SOUND` = 343 m/s
-- [x] `computeDiffusionRange()` 
-- [x] `isPrime()` utility
-- [x] Parameter validation helpers in `helpers.ts`
+- `Sequence1D` / `Sequence2D` interfaces
+- `PanelCell`, `PanelGeometry`, `DiffusionRange`
+- `Unit` type (mm | cm | inch)
+- `Material` interface with thickness, kerf, density
 
 ---
 
-## ❌ Missing Implementations (Priority Order)
+### Math Engine Utilities - COMPLETE
 
-### 1. Abfusor Math Engine 🔴 HIGH PRIORITY
-**File:** `src/core/math/abfusor.ts` (currently empty)
+#### ✅ Helper Functions
+**File:** `src/core/helpers.ts`
 
-**Required Functions:**
+- `DEFAULT_SPEED_OF_SOUND = 343 m/s`
+- `frequencyToWavelength(frequency, speedOfSound)` 
+- `computeDiffusionRange(wellWidth, maxDepth, speedOfSound)`
+- `isPrime(n)` - Prime number validation
+- `validateQrdParams(prime, wellWidth, frequency)`
+
+#### ✅ Validation Functions
+**File:** `src/core/math/validation.ts` (and inline in math modules)
+
+- QRD parameter validation
+- PRD result validation  
+- Skyline parameter validation
+- Abfusor result validation
+
+---
+
+## 🧱 Geometry Builders - PARTIALLY IMPLEMENTED
+
+### ✅ QRD Builder
+**File:** `src/core/geometry/QRDBuilder.ts`
+
+**Features:**
+- Extends `PanelBuilder` base class
+- Generates sequence using QRD algorithm
+- Computes depths with maxDepth constraint
+- Creates `PanelCell[]` array with positions and dimensions
+- Calculates bounding box
+- Includes diffusion range metadata
+
+### ✅ Skyline Builder  
+**File:** `src/core/geometry/SkylineBuilder.ts`
+
+**Features:**
+- Extends `PanelBuilder` base class
+- Generates 2D skyline sequence
+- Computes depths for grid layout
+- Creates cells with x/y positioning
+- Calculates square bounding box (gridSize × gridSize)
+- Includes diffusion range metadata
+
+### ⚠️ Factory Pattern - PARTIAL
+**File:** `src/core/factories/createPanelBuilder.ts`
+
+Currently supports:
+- ✅ QRD builder
+- ✅ Skyline builder  
+- ❌ Abfusor builder (missing)
+- ❌ Absorber builders (missing)
+
+---
+
+## ❌ NOT IMPLEMENTED YET
+
+### 1. Porous Absorber Math
+**File:** `src/core/math/porousAbsorber.ts` - DOES NOT EXIST
+
+Needed functions:
+- `computeAbsorptionCoefficient()` 
+- `computePorousResonances()`
+- Main computation function with result interface
+
+### 2. Helmholtz Resonator Math  
+**File:** `src/core/math/helmholtz.ts` - DOES NOT EXIST
+
+Needed functions:
+- `computeHelmholtzFrequency()`
+- `computeHelmholtzBandwidth()`
+- Main computation function with result interface
+
+### 3. Absorber Geometry Builders
+- ❌ PorousAbsorberBuilder
+- ❌ HelmholtzAbsorberBuilder
+
+### 4. Abfusor Integration
+- ⚠️ Math exists but not wired into factory
+- ⚠️ No `AbfusorBuilder` class
+- ⚠️ No integration with geometry pipeline
+
+---
+
+## 📊 Implementation Progress Summary
+
+| Component | Status | Files | % Complete |
+|-----------|--------|-------|------------|
+| QRD Math | ✅ Done | `qrd.ts` | 100% |
+| PRD Math | ✅ Done | `prd.ts` | 100% |
+| Skyline Math | ✅ Done | `skyline.ts` | 100% |
+| Abfusor Math | ⚠️ Partial | `abfusor.ts` | 80% |
+| QRD Builder | ✅ Done | `QRDBuilder.ts` | 90% |
+| Skyline Builder | ✅ Done | `SkylineBuilder.ts` | 90% |
+| Factory Pattern | ⚠️ Partial | `createPanelBuilder.ts` | 50% |
+| Porous Absorber Math | ❌ Missing | - | 0% |
+| Helmholtz Absorber Math | ❌ Missing | - | 0% |
+| Types & Schemas | ✅ Done | `types.ts`, `panelTypes.ts` | 100% |
+
+---
+
+## 🎯 Immediate Next Steps (Priority Order)
+
+### Phase 2A: Complete Abfusor Integration 🔴 HIGH
+1. Create `AbfusorBuilder` class in `src/core/geometry/`
+2. Add to factory pattern in `createPanelBuilder.ts`
+3. Wire up geometry generation pipeline
+4. Test with sample binary patterns
+
+### Phase 2B: Implement Porous Absorber Math 🔴 HIGH  
+1. Create `src/core/math/porousAbsorber.ts`
+2. Implement absorption coefficient calculation
+3. Add resonant frequency computation
+4. Define `PorousResult` interface
+5. Create `PorousAbsorberBuilder`
+
+### Phase 2C: Implement Helmholtz Absorber Math 🔴 HIGH
+1. Create `src/core/math/helmholtz.ts`
+2. Implement Helmholtz frequency formula: `f = (c / 2π) * √(A / (V * L))`
+3. Add bandwidth/Q factor calculation
+4. Define `HelmholtzResult` interface
+5. Create `HelmholtzAbsorberBuilder`
+
+### Phase 2D: Complete Factory Pattern 🟡 MEDIUM
+1. Add all missing builder types to factory
+2. Ensure type safety across all panel types
+3. Add comprehensive validation
+
+---
+
+## 🔗 Existing Integration Points
+
+### Files Already Working Together:
+```
+src/core/
+├── types/
+│   ├── types.ts          ✅ Complete - Core interfaces
+│   └── panelTypes.ts     ✅ Complete - Panel type schemas
+├── math/
+│   ├── qrd.ts           ✅ Complete - QRD computation
+│   ├── prd.ts           ✅ Complete - PRD computation  
+│   ├── skyline.ts       ✅ Complete - Skyline computation
+│   └── abfusor.ts       ⚠️ Partial - Needs integration
+├── geometry/
+│   ├── panelBuilder.ts  ✅ Base class
+│   ├── QRDBuilder.ts    ✅ Complete
+│   └── SkylineBuilder.ts ✅ Complete
+└── factories/
+    └── createPanelBuilder.ts ⚠️ Partial - Missing types
+```
+
+### Helper Utilities:
+- `src/core/helpers.ts` ✅ All utilities available
+  - Speed of sound constant
+  - Wavelength conversion
+  - Diffusion range calculation
+  - Prime number validation
+
+---
+
+## 🧪 Testing Status
+
+### Existing Tests (Implicit):
+- QRD sequence generation validated by existing code
+- PRD calculations include validation logic
+- Skyline pattern generation tested through builders
+
+### Missing Test Coverage:
+- Abfusor edge cases (empty patterns, invalid binary)
+- Boundary conditions for all math functions
+- Integration tests between math and geometry layers
+
+---
+
+## 📝 Notes & Implementation Details
+
+### QRD Algorithm:
 ```typescript
-// Generate binary amplitude diffuser pattern
-function generateAbfusorPattern(
-  width: number, 
-  height: number,
-  cellSize: number,
-  sequenceLength?: number
-): number[][];
-
-// Calculate depths for A/B alternating wells
-function computeAbfusorDepths(
-  pattern: number[][],
-  wavelength: number,
-  depthA: number,
-  depthB: number
-): number[][];
-
-// Validate binary pattern (should be 0/1 or similar)
-function validateAbfusorPattern(pattern: any[]): string[];
-
-// Main computation function
-export function computeAbfusor(
-  width: number,
-  height: number,
-  cellSize: number,
-  depthA: number,
-  depthB: number,
-  designFrequency: number,
-  speedOfSound?: number
-): AbfusorResult;
+// Sequence: values[i] = (i * i) % prime
+// Depth: depth[i] = (values[i] * wavelength) / (2 * prime)
 ```
 
-**Interface:**
+### Skyline Algorithm:
 ```typescript
-export interface AbfusorResult {
-  pattern: number[][];
-  depths: number[][];
-  wavelength: number;
-  diffusion: DiffusionRange;
-}
+// 2D grid with skyline offset per row
+// Each row has increasing well depths for aesthetic + acoustic benefits
 ```
 
----
-
-### 2. Porous Absorber Math 🔴 HIGH PRIORITY  
-**File:** `src/core/math/porousAbsorber.ts` (needs creation)
-
-**Required Functions:**
+### Abfusor Pattern:
 ```typescript
-// Calculate absorption coefficient based on porosity and thickness
-function computeAbsorptionCoefficient(
-  porosity: number,
-  flowResistivity: number,
-  frequency: number,
-  thickness: number
-): number;
-
-// Calculate resonant frequencies for porous layer
-function computePorousResonances(
-  thickness: number,
-  speedOfSound: number,
-  density: number
-): number[];
-
-// Main computation function
-export function computePorousAbsorber(
-  width: number,
-  height: number,
-  depth: number,
-  porosity?: number,
-  flowResistivity?: number,
-  designFrequency?: number,
-  speedOfSound = DEFAULT_SPEED_OF_SOUND
-): PorousResult;
-```
-
-**Interface:**
-```typescript
-export interface PorousResult {
-  absorptionCoefficients: number[]; // per frequency band
-  resonantFrequencies: number[];
-  wavelength: number;
-}
+// Binary pattern where:
+// - value 1 → depthA (present cell)
+// - value 0 → depthB (absent cell)
+// Depths calculated based on position and wavelength
 ```
 
 ---
 
-### 3. Helmholtz Resonator Math 🔴 HIGH PRIORITY
-**File:** `src/core/math/helmholtz.ts` (needs creation)
+## ✅ What's Working Now
 
-**Required Functions:**
-```typescript
-// Calculate resonant frequency of Helmholtz cavity
-function computeHelmholtzFrequency(
-  holeArea: number,      // total hole area
-  holePerimeter: number, // affects edge correction
-  neckLength: number,    // effective length with end corrections
-  cavityVolume: number,
-  speedOfSound = DEFAULT_SPEED_OF_SOUND
-): number;
-
-// Calculate absorption bandwidth (Q factor)
-function computeHelmholtzBandwidth(
-  frequency: number,
-  holeArea: number,
-  neckLength: number,
-  cavityVolume: number,
-  speedOfSound = DEFAULT_SPEED_OF_SOUND
-): number; // Hz bandwidth at -3dB
-
-// Main computation function  
-export function computeHelmholtzAbsorber(
-  width: number,
-  height: number,
-  cavityDepth: number,
-  holeDiameter: number,
-  holeSpacing: number,
-  designFrequency?: number,
-  speedOfSound = DEFAULT_SPEED_OF_SOUND
-): HelmholtzResult;
-```
-
-**Interface:**
-```typescript
-export interface HelmholtzResult {
-  resonantFrequency: number;
-  bandwidth: number; // Hz
-  absorptionCoefficient: number; // at resonance
-  wavelength: number;
-}
-```
+You can currently:
+1. Generate QRD sequences with any prime number
+2. Calculate QRD depths with maxDepth constraint
+3. Build complete QRD geometry with cells and bounding box
+4. Generate Skyline 2D patterns
+5. Calculate Skyline depths for grid layouts
+6. Build complete Skyline geometry
+7. Validate all parameters before computation
 
 ---
 
-### 4. Binary Pattern Generators 🟡 MEDIUM PRIORITY
+## ❌ What's Missing
 
-**File:** `src/core/math/patternGenerators.ts` (needs creation)
-
-**Required Functions:**
-```typescript
-// Generate binary sequence for abfusor/skyline variants
-function generateBinarySequence(
-  length: number,
-  seed?: number,
-  patternType?: 'random' | 'alternating' | 'gradient'
-): number[];
-
-// Generate custom pattern from user input
-function validateCustomPattern(pattern: any[]): string[];
-
-// Convert binary to depth values (A/B alternating)
-function convertBinaryToDepths(
-  binary: number[],
-  depthA: number,
-  depthB: number
-): number[];
-```
+You cannot yet:
+1. Create Abfusor panels (math exists but not integrated)
+2. Design Porous absorbers (no math or builder)
+3. Design Helmholtz resonators (no math or builder)
+4. Export to SVG/PDF
+5. View in 3D with Three.js
+6. Generate cut lists or material estimates
 
 ---
 
-### 5. Panel Cell Subdivision 🟡 MEDIUM PRIORITY
+## 🚀 Roadmap to Completion
 
-**File:** `src/core/math/cellSubdivision.ts` (needs creation)
+### Step 1: Finish Core Math ✅ IN PROGRESS
+- [ ] Integrate Abfusor into factory system
+- [ ] Implement Porous absorber math
+- [ ] Implement Helmholtz resonator math
+- [ ] Add absorber geometry builders
 
-**Required Functions:**
-```typescript
-// Subdivide panel into acoustic cells based on type
-function subdividePanel(
-  params: PanelParams,
-  cellSize?: number
-): PanelCell[];
+### Step 2: Complete Geometry Pipeline 🟡 NEXT
+- [ ] Add construction features (wall thickness, backing)
+- [ ] Implement cut list generation
+- [ ] Add material calculations
 
-// Calculate cell positions for QRD/Skyline
-function calculateQRDCells(
-  sequence: Sequence1D | Sequence2D,
-  wellWidth: number,
-  panelDimensions: Dimensions
-): PanelCell[];
+### Step 3: Add 2D Views 🔴 PENDING
+- [ ] SVG side view for QRD
+- [ ] SVG top view for Skyline  
+- [ ] SVG pattern view for Abfusor
 
-// Calculate cell positions for Abfusor
-function calculateAbfusorCells(
-  pattern: number[][],
-  cellSize: number,
-  panelDimensions: Dimensions
-): PanelCell[];
-```
+### Step 4: Build Vue UI 🟡 PENDING
+- [ ] Parameter forms for each panel type
+- [ ] State management (Pinia)
+- [ ] Live preview integration
 
----
-
-## 📋 Implementation Checklist
-
-### Phase 1: Abfusor (Priority 1)
-- [ ] Create `src/core/math/abfusor.ts` with all functions
-- [ ] Define `AbfusorResult` interface  
-- [ ] Add validation for binary patterns
-- [ ] Test with sample patterns
-- [ ] Update types if needed
-
-### Phase 2: Porous Absorber (Priority 1)
-- [ ] Create `src/core/math/porousAbsorber.ts`
-- [ ] Implement absorption coefficient calculation
-- [ ] Add resonant frequency computation
-- [ ] Define `PorousResult` interface
-- [ ] Test with typical parameters
-
-### Phase 3: Helmholtz Resonator (Priority 1)
-- [ ] Create `src/core/math/helmholtz.ts`
-- [ ] Implement Helmholtz frequency formula
-- [ ] Add bandwidth/Q factor calculation
-- [ ] Define `HelmholtzResult` interface  
-- [ ] Test with sample cavities
-
-### Phase 4: Pattern Generators (Priority 2)
-- [ ] Create `src/core/math/patternGenerators.ts`
-- [ ] Implement binary sequence generators
-- [ ] Add custom pattern validation
-- [ ] Export utility functions
-
-### Phase 5: Cell Subdivision (Priority 2)
-- [ ] Create `src/core/math/cellSubdivision.ts`
-- [ ] Implement panel subdivision logic
-- [ ] Calculate positions for each panel type
-- [ ] Integrate with geometry builders
+### Step 5: Add Export & 3D 🔴 PENDING
+- [ ] SVG export with layers
+- [ ] PDF export
+- [ ] Three.js visualization
 
 ---
 
-## 🔗 Dependencies & Integration Points
-
-### Files to Update After Implementation:
-1. **`src/core/types/panelTypes.ts`** - Add result interfaces if needed
-2. **`src/core/factories/createPanelBuilder.ts`** - Add abfusor/absorber builders
-3. **`src/core/geometry/panelBuilder.ts`** - Support new panel types
-4. **`src/App.vue` / Vue components** - UI for new panel types
-
-### Existing Files to Reference:
-- `src/core/helpers.ts` - Use existing utilities (speed of sound, diffusion range)
-- `src/core/math/validation.ts` - Extend validation functions
-- `src/core/types/types.ts` - Add new result interfaces
-
----
-
-## 🧪 Testing Requirements
-
-For each implementation:
-1. **Unit tests** for individual math functions
-2. **Edge case handling**: invalid inputs, boundary conditions
-3. **Integration test** with geometry builders
-4. **Validation test** ensuring error messages are clear
-
-### Test Cases to Include:
-- QRD: prime = 7, 11, 13 (common values)
-- Skyline: grid sizes 5, 7, 11
-- Abfusor: various binary patterns
-- Porous: different porosities and thicknesses
-- Helmholtz: various cavity volumes and neck dimensions
-
----
-
-## 📝 Notes & References
-
-### Acoustic Formulas Needed:
-
-**Helmholtz Resonator:**
-```
-f = (c / 2π) * √(A / (V * L))
-```
-Where:
-- c = speed of sound
-- A = hole area
-- V = cavity volume  
-- L = effective neck length (includes end corrections)
-
-**Porous Absorption:**
-Use Delany-Babarko model or similar for flow resistivity → absorption coefficient conversion.
-
-**Abfusor Pattern:**
-Binary amplitude diffuser uses alternating depths based on binary sequence:
-- 0 → depth A
-- 1 → depth B
-
----
-
-## 🚀 Next Steps
-
-1. Start with **Abfusor math** (most critical missing piece)
-2. Implement one panel type at a time
-3. Test thoroughly before moving to next
-4. Update documentation as you go
+**Last Updated:** April 13, 2026  
+**Current Phase:** Core Math Engine (80% complete)  
+**Next Milestone:** Complete Abfusor Integration & Add Absorber Types
