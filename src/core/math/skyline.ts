@@ -1,4 +1,4 @@
-import { computeDiffusionRange, DEFAULT_SPEED_OF_SOUND } from "../helpers";
+import { computeDiffusionRange, DEFAULT_SPEED_OF_SOUND, isPrime } from "../helpers";
 import type { DiffusionRange, Sequence2D } from "../types/types";
 
 /**
@@ -115,39 +115,28 @@ export function computeSkyline(
 /**
  * Validate Skyline parameters.
  */
-export function validateSkylineParams(
-  gridSize: number,
-  wellWidth: number,
-  frequency: number,
-): string[] {
+export function validateSkylineParams(params: {
+  gridSize: number;
+  wellWidth: number;
+  frequency: number;
+}): string[] {
   const errors: string[] = [];
 
-  if (gridSize < 3) {
+  if (params.gridSize < 3) {
     errors.push("Grid size must be ≥ 3");
   }
 
-  if (!isPrime(gridSize)) {
-    errors.push(`Grid size ${gridSize} is not a prime number`);
+  if (!isPrime(params.gridSize)) {
+    errors.push(`Grid size ${params.gridSize} is not a prime number`);
   }
 
-  if (wellWidth <= 0) {
+  if (params.wellWidth <= 0) {
     errors.push("Well width must be > 0");
   }
 
-  if (frequency <= 0) {
+  if (params.frequency <= 0) {
     errors.push("Frequency must be > 0");
   }
 
   return errors;
-}
-
-/**
- * Check if a number is prime.
- */
-function isPrime(n: number): boolean {
-  if (n < 2) return false;
-  for (let i = 2; i <= Math.sqrt(n); i++) {
-    if (n % i === 0) return false;
-  }
-  return true;
 }
