@@ -6,7 +6,7 @@ import {
 	computeAbsorptionBandwidth,
 	computePorousAbsorber,
 	validatePorousAbsorberResults,
-} from "../src/core/math/porousAbsorber";
+} from "../../core/math/porousAbsorber";
 
 describe("Porous Absorber Math Module", () => {
 	describe("computeAbsorptionCoefficient", () => {

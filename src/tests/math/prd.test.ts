@@ -3,7 +3,7 @@ import {
 	computePRDFromQrd,
 	validatePRDResults,
 	computePowerRatio,
-} from "../src/core/math/prd";
+} from "../../core/math/prd";
 
 describe("PRD Math Module", () => {
 	describe("computePowerRatio", () => {

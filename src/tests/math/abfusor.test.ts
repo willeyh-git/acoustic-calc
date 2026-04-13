@@ -4,7 +4,7 @@ import {
 	computeAbfusorDepths,
 	generateAbfusor,
 	validateAbfusorResults,
-} from "../src/core/math/abfusor";
+} from "../../core/math/abfusor";
 
 describe("Abfusor Math Module", () => {
 	describe("generateAbfusorSequence", () => {

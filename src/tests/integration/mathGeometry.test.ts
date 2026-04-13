@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { QrdBuilder } from "../src/core/geometry/QRDBuilder";
-import { SkylineBuilder } from "../src/core/geometry/SkylineBuilder";
-import type { QrdParams, SkylineParams } from "../src/core/types/panelTypes";
+import { QrdBuilder } from "../../core/geometry/QRDBuilder";
+import { SkylineBuilder } from "../../core/geometry/SkylineBuilder";
+import type { QrdParams, SkylineParams } from "../../core/types/panelTypes";
 
 describe("Math and Geometry Integration", () => {
 	describe("QRD Builder Integration with Math", () => {

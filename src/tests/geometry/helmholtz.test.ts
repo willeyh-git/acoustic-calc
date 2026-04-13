@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { HelmholtzAbsorberBuilder } from "../src/core/geometry/HelmholtzAbsorberBuilder";
-import type { AbsorberParams } from "../src/core/types/panelTypes";
+import { HelmholtzAbsorberBuilder } from "../../core/geometry/HelmholtzAbsorberBuilder";
+import type { AbsorberParams } from "../../core/types/panelTypes";
 
 describe("Helmholtz Absorber Builder", () => {
 	const createHelmholtzParams = (

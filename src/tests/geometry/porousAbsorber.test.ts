@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { PorousAbsorberBuilder } from "../src/core/geometry/PorousAbsorberBuilder";
-import type { AbsorberParams } from "../src/core/types/panelTypes";
+import { PorousAbsorberBuilder } from "../../core/geometry/PorousAbsorberBuilder";
+import type { AbsorberParams } from "../../core/types/panelTypes";
 
 describe("Porous Absorber Builder", () => {
 	const createPorousParams = (

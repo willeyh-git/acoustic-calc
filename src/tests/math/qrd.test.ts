@@ -3,7 +3,7 @@ import {
 	generateQrdSequence,
 	computeQrdDepths,
 	computeQrd,
-} from "../src/core/math/qrd";
+} from "../../core/math/qrd";
 
 describe("QRD Math Module", () => {
 	describe("generateQrdSequence", () => {

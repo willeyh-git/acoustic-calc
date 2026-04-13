@@ -7,7 +7,7 @@ import {
 	computeCoupledResonances,
 	computeHelmholtzResonator,
 	validateHelmholtzResonatorResults,
-} from "../src/core/math/helmholtz";
+} from "../../core/math/helmholtz";
 
 describe("Helmholtz Resonator Math Module", () => {
 	describe("computeHelmholtzFrequency", () => {

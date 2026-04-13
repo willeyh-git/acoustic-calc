@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { SkylineBuilder } from "../src/core/geometry/SkylineBuilder";
-import type { SkylineParams } from "../src/core/types/panelTypes";
+import { SkylineBuilder } from "../../core/geometry/SkylineBuilder";
+import type { SkylineParams } from "../../core/types/panelTypes";
 
 describe("Skyline Builder", () => {
 	const createSkylineParams = (

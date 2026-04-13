@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { QrdBuilder } from "../src/core/geometry/QRDBuilder";
-import type { QrdParams } from "../src/core/types/panelTypes";
+import { QrdBuilder } from "../../core/geometry/QRDBuilder";
+import type { QrdParams } from "../../core/types/panelTypes";
 
 describe("QRD Builder", () => {
 	const createQrdParams = (overrides: Partial<QrdParams> = {}): QrdParams => ({

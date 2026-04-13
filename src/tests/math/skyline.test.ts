@@ -3,7 +3,7 @@ import {
 	generateSkylineSequence,
 	computeSkylineDepths,
 	computeSkyline,
-} from "../src/core/math/skyline";
+} from "../../core/math/skyline";
 
 describe("Skyline Math Module", () => {
 	describe("generateSkylineSequence", () => {
