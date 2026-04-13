@@ -3,56 +3,86 @@ import type { Material, Dimensions, Unit } from "./types.ts";
 export type PanelType = "qrd" | "prd" | "skyline" | "abfusor" | "absorber";
 
 export interface BasePanelParams {
-  type: PanelType;
-  unit: Unit;
+	type: PanelType;
+	unit: Unit;
 
-  dimensions: Dimensions;
-  material: Material;
+	dimensions: Dimensions;
+	material: Material;
 
-  cellSize: number;
+	cellSize: number;
 
-  withBacking?: boolean;
-  withFrame?: boolean;
+	withBacking?: boolean;
+	withFrame?: boolean;
 }
 
 export interface QrdParams extends BasePanelParams {
-  type: "qrd";
+	type: "qrd";
 
-  prime: number;
-  designFrequency: number;
-  speedOfSound?: number;
+	prime: number;
+	designFrequency: number;
+	speedOfSound?: number;
 
-  wellWidth: number;
-  maxDepth?: number;
+	wellWidth: number;
+	maxDepth?: number;
 
-  wallThickness?: number;
-  flapThickness?: number;
+	wallThickness?: number;
+	flapThickness?: number;
 }
 
 export interface SkylineParams extends BasePanelParams {
-  type: "skyline";
+	type: "skyline";
 
-  gridSize: number;
-  prime: number;
-  designFrequency: number;
+	gridSize: number;
+	prime: number;
+	designFrequency: number;
+
+	wellWidth: number;
+	maxDepth?: number;
+	speedOfSound?: number;
 }
 
 export interface AbfusorParams extends BasePanelParams {
-  type: "abfusor";
+	type: "abfusor";
 
-  pattern?: number[]; // binary (0/1)
-  depthA: number;
-  depthB: number;
+	pattern?: number[]; // binary (0/1)
+	depthA: number;
+	depthB: number;
 }
 
 export interface AbsorberParams extends BasePanelParams {
-  type: "absorber";
+	type: "absorber";
 
-  absorberType: "porous" | "helmholtz";
+	absorberType: "porous" | "helmholtz";
 
-  cavityDepth?: number;
-  holeDiameter?: number;
-  holeSpacing?: number;
+	cavityDepth?: number;
+	holeDiameter?: number;
+	holeSpacing?: number;
 }
 
-export type PanelParams = QrdParams | SkylineParams | AbfusorParams | AbsorberParams;
+export type PanelParams =
+	| QrdParams
+	| SkylineParams
+	| AbfusorParams
+	| AbsorberParams;
+
+// Type-specific validation interfaces (for backward compatibility)
+export interface QrdParams extends BasePanelParams {
+	type: "qrd";
+	prime: number;
+	designFrequency: number;
+	speedOfSound?: number;
+	wellWidth: number;
+	maxDepth?: number;
+	wallThickness?: number;
+	flapThickness?: number;
+}
+
+export interface SkylineParams extends BasePanelParams {
+	type: "skyline";
+	gridSize: number;
+	prime: number;
+	designFrequency: number;
+	speedOfSound?: number;
+	wellWidth: number;
+	maxDepth?: number;
+}
