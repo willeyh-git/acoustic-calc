@@ -89,6 +89,44 @@ export interface AbfusorResult {
 	diffusionRange: DiffusionRange;
 }
 
+export interface PorousMaterialProperties {
+	thickness: number;
+	flowResistivity?: number;
+	porosity?: number;
+	density?: number;
+}
+
+export interface PorousResult {
+	frequency: number;
+	absorptionCoefficient: number;
+	resonantFrequencies: number[];
+	bandwidth: {
+		centerFrequency: number;
+		bandwidthHz: number;
+		minFrequency: number;
+		maxFrequency: number;
+	};
+	materialProperties: PorousMaterialProperties;
+}
+
+export interface HelmholtzMaterialProperties {
+	neckArea?: number;
+	cavityVolume?: number;
+	neckLength?: number;
+	neckDiameter?: number;
+}
+
+export interface HelmholtzResult {
+	resonantFrequency: number;
+	bandwidth: {
+		QFactor: number;
+		bandwidthHz: number;
+		minFrequency: number;
+		maxFrequency: number;
+	};
+	materialProperties: HelmholtzMaterialProperties;
+}
+
 export interface ValidationResult {
 	valid: boolean;
 	errors: string[];
