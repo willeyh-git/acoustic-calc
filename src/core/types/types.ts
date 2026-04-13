@@ -3,7 +3,7 @@ export type Unit = "mm" | "cm" | "inch";
 export interface Dimensions {
 	width: number;
 	height: number;
-	depth: number;
+	depth?: number;
 }
 
 export interface DiffusionRange {
@@ -64,6 +64,16 @@ export interface PanelGeometry {
 		prd?: import("../math/prd").PRDResult;
 		skyline?: import("../math/skyline").SkylineResult;
 	};
+}
+
+export interface PanelParamsBase {
+	type: string;
+	unit: Unit;
+	dimensions: Dimensions;
+	material: Material;
+	cellSize: number;
+	withBacking?: boolean;
+	withFrame?: boolean;
 }
 
 export interface ValidationResult {

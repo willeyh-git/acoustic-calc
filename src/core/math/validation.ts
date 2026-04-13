@@ -1,10 +1,11 @@
 import { isPrime } from "../helpers";
-import type { Sequence1D, Sequence2D, PanelParams } from "../types/types";
+import type { Sequence1D, Sequence2D, PanelParams, Dimensions, Material, Unit } from "../types/types";
+import type { QrdParams, SkylineParams } from "../types/panelTypes";
 
 /**
  * Validate QRD parameters.
  */
-export function validateQrdParams(params: any): string[] {
+export function validateQrdParams(params: QrdParams): string[] {
 	const errors: string[] = [];
 
 	if (!isPrime(params.prime)) {
@@ -29,7 +30,47 @@ export function validateQrdParams(params: any): string[] {
 /**
  * Validate Skyline parameters.
  */
-export function validateSkylineParams(params: any): string[] {
+export function validateSkylineParams(params: SkylineParams): string[] {
+	const errors: string[] = [];
+
+	if (params.gridSize < 3) {
+		errors.push("Grid size must be ≥ 3");
+	}
+
+	if (!isPrime(params.gridSize)) {
+		errors.push(`Grid size ${params.gridSize} is not a prime number`);
+	}
+
+	if (params.wellWidth <= 0) {
+		errors.push("Well width must be > 0");
+	}
+
+	if (params.designFrequency <= 0) {
+		errors.push("Design frequency must be > 0");
+	}
+
+	return errors;
+}
+
+	if (params.prime < 3) {
+		errors.push("Prime must be ≥ 3");
+	}
+
+	if (params.wellWidth <= 0) {
+		errors.push("Well width must be > 0");
+	}
+
+	if (params.designFrequency <= 0) {
+		errors.push("Design frequency must be > 0");
+	}
+
+	return errors;
+}
+
+/**
+ * Validate Skyline parameters.
+ */
+export function validateSkylineParams(params: SkylineParams): string[] {
 	const errors: string[] = [];
 
 	if (params.gridSize < 3) {
@@ -211,12 +252,15 @@ export function validatePanelParams(params: PanelParams): string[] {
 /**
  * Validate dimensions.
  */
-function validateDimensions(dimensions: any, errors: string[]): void {
-	if (!dimensions.width || dimensions.width <= 0) {
+export function validateDimensions(
+	dimensions: Dimensions,
+	errors: string[],
+): void {
+	if (dimensions.width <= 0) {
 		errors.push("Width must be > 0");
 	}
 
-	if (!dimensions.height || dimensions.height <= 0) {
+	if (dimensions.height <= 0) {
 		errors.push("Height must be > 0");
 	}
 
@@ -228,7 +272,16 @@ function validateDimensions(dimensions: any, errors: string[]): void {
 /**
  * Validate cell positions.
  */
-export function validateCells(cells: any[]): string[] {
+export type CellPosition = {
+	x: number;
+	y: number;
+	wallLeft?: number;
+	wallRight?: number;
+	wallTop?: number;
+	wallBottom?: number;
+};
+
+export function validateCells(cells: CellPosition[]): string[] {
 	const errors: string[] = [];
 
 	for (let i = 0; i < cells.length; i++) {
@@ -266,8 +319,8 @@ export function validateCells(cells: any[]): string[] {
  */
 export function validatePanelBuild(
 	params: PanelParams,
-	sequence?: any,
-	depths?: any,
+	sequence?: Sequence1D | Sequence2D,
+	depths?: number | number[],
 ): ValidationResult {
 	const errors: string[] = [];
 	const warnings: string[] = [];
@@ -281,7 +334,7 @@ export function validatePanelBuild(
 	}
 
 	// Validate sequence if provided
-	if (sequence) {
+	if (sequence !== undefined && sequence !== null) {
 		const seqErrors = validateSequence(sequence);
 		errors.push(...seqErrors);
 	}

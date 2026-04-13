@@ -64,3 +64,25 @@ export type PanelParams =
 	| SkylineParams
 	| AbfusorParams
 	| AbsorberParams;
+
+// Type-specific validation interfaces (for backward compatibility)
+export interface QrdParams extends BasePanelParams {
+	type: "qrd";
+	prime: number;
+	designFrequency: number;
+	speedOfSound?: number;
+	wellWidth: number;
+	maxDepth?: number;
+	wallThickness?: number;
+	flapThickness?: number;
+}
+
+export interface SkylineParams extends BasePanelParams {
+	type: "skyline";
+	gridSize: number;
+	prime: number;
+	designFrequency: number;
+	speedOfSound?: number;
+	wellWidth: number;
+	maxDepth?: number;
+}
