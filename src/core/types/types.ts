@@ -76,6 +76,19 @@ export interface PanelParamsBase {
 	withFrame?: boolean;
 }
 
+export interface PRDResult {
+	powerRatio: number;
+	diffusionRange: DiffusionRange;
+	wavelength: number;
+}
+
+export interface AbfusorResult {
+	sequence: Sequence1D;
+	depthsA: number[];
+	depthsB: number[];
+	diffusionRange: DiffusionRange;
+}
+
 export interface ValidationResult {
 	valid: boolean;
 	errors: string[];
