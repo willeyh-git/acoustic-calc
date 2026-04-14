@@ -293,41 +293,6 @@ function onMeshHover(event: MouseEvent) {
 	}
 }
 
-// Handle click on meshes
-function onMeshClick(event: MouseEvent) {
-	if (!camera || !gl.value) return;
-
-	// Raycaster for click detection
-	const raycaster = new THREE.Raycaster();
-	raycaster.setFromCamera(event, camera);
-
-	// Intersect with meshes
-	const intersects = raycaster.intersectObjects(meshes.values(), false);
-
-	if (intersects.length > 0) {
-		const object = intersects[0].object;
-		const cellIndexStr = object.name.split("-")[1];
-		const cellIndex = cellIndexStr ? parseInt(cellIndexStr, 10) : -1;
-		const cellData = cellDataMap.get(cellIndex);
-
-		selectedCellIndex.value = cellData?.index ?? null;
-
-		// Apply selection material
-		if (object.material) {
-			object.material.color.setHex(SELECTION_MATERIAL.color);
-
-			setTimeout(() => {
-				const originalColor = getMaterialPreset(materialPreset).color;
-				object.material.color.set(originalColor);
-			}, 500);
-		}
-
-		emit("click-cell", cellData?.index ?? -1, event);
-	} else {
-		selectedCellIndex.value = null;
-	}
-}
-
 // Start render loop
 function startRenderLoop() {
 	function animate() {

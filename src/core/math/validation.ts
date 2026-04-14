@@ -1,5 +1,12 @@
 import { isPrime } from "../helpers";
-import type { Sequence1D, Sequence2D, PanelParams, Dimensions, Material, Unit } from "../types/types";
+import type {
+	Sequence1D,
+	Sequence2D,
+	PanelParams,
+	Dimensions,
+	Material,
+	Unit,
+} from "../types/types";
 import type { QrdParams, SkylineParams } from "../types/panelTypes";
 
 /**
@@ -11,46 +18,6 @@ export function validateQrdParams(params: QrdParams): string[] {
 	if (!isPrime(params.prime)) {
 		errors.push(`Prime number ${params.prime} is not a prime`);
 	}
-
-	if (params.prime < 3) {
-		errors.push("Prime must be ≥ 3");
-	}
-
-	if (params.wellWidth <= 0) {
-		errors.push("Well width must be > 0");
-	}
-
-	if (params.designFrequency <= 0) {
-		errors.push("Design frequency must be > 0");
-	}
-
-	return errors;
-}
-
-/**
- * Validate Skyline parameters.
- */
-export function validateSkylineParams(params: SkylineParams): string[] {
-	const errors: string[] = [];
-
-	if (params.gridSize < 3) {
-		errors.push("Grid size must be ≥ 3");
-	}
-
-	if (!isPrime(params.gridSize)) {
-		errors.push(`Grid size ${params.gridSize} is not a prime number`);
-	}
-
-	if (params.wellWidth <= 0) {
-		errors.push("Well width must be > 0");
-	}
-
-	if (params.designFrequency <= 0) {
-		errors.push("Design frequency must be > 0");
-	}
-
-	return errors;
-}
 
 	if (params.prime < 3) {
 		errors.push("Prime must be ≥ 3");
