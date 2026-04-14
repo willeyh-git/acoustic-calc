@@ -1,3 +1,6 @@
+import type { PRDResult } from "../math/prd";
+import type { SkylineResult } from "../math/skyline";
+
 export type Unit = "mm" | "cm" | "inch";
 
 export interface Dimensions {
@@ -36,6 +39,8 @@ export interface AcousticInfo {
 	minDiffusionFreq?: number;
 }
 
+export type FrameProfile = "square" | "round" | "flat";
+
 export interface PanelCell extends Dimensions {
 	x: number;
 	y: number;
@@ -45,12 +50,33 @@ export interface PanelCell extends Dimensions {
 	wallRight?: number;
 	wallTop?: number;
 	wallBottom?: number;
+
+	// Construction features (Step 2)
+	backingThickness?: number;
+	frameProfile?: FrameProfile;
+	kerfOffset?: number;
 }
+
+export type FrameProfile = "square" | "round" | "flat";
 
 export interface CutPiece extends Omit<Dimensions, "depth"> {
 	quantity: number;
 	label?: string;
+	purpose?: "wall" | "backing" | "frame" | "well";
+	materialType?: string;
 }
+
+export interface Layout {
+	sheetSize: Dimensions;
+	pieces: CutPiece[];
+	wastePercentage: number;
+}
+
+export type SheetMaterial =
+	| "plywood-18mm"
+	| "mdf-15mm"
+	| "hardboard-9mm"
+	| "medium-density-fiberboard";
 
 export interface PanelGeometry {
 	cells: PanelCell[];
@@ -61,8 +87,14 @@ export interface PanelGeometry {
 		materialUsage?: number;
 		cutList?: CutPiece[];
 		diffusion?: DiffusionRange;
-		prd?: import("../math/prd").PRDResult;
-		skyline?: import("../math/skyline").SkylineResult;
+		prd?: PRDResult;
+		skyline?: SkylineResult;
+
+		// Construction features (Step 2)
+		wallThickness?: number;
+		backingPlateThickness?: number;
+		edgeFrameProfile?: FrameProfile;
+		kerf?: number;
 	};
 }
 
@@ -131,4 +163,48 @@ export interface ValidationResult {
 	valid: boolean;
 	errors: string[];
 	warnings?: string[];
+}
+
+// Cost estimation interfaces (Step 2)
+export interface MaterialUsage {
+	totalAreaM2: number;
+	byComponent: {
+		wells: number;
+		backing: number;
+		frame: number;
+		waste: number;
+	};
+}
+
+export interface WasteAnalysis {
+	totalWasteM2: number;
+	wastePercentage: number;
+	sheetsUsed: number;
+	sheetsRemaining: number;
+}
+
+export interface EstimatedCost {
+	total: number;
+	currency: string;
+	breakdown: {
+		materials: number;
+		wasteOverhead: number;
+		labor?: number;
+	};
+}
+
+export interface CostBreakdown {
+	wells: number;
+	backingPlate: number;
+	edgeFrame: number;
+	waste: number;
+	subtotal: number;
+}
+
+export interface TotalCost {
+	materials: number;
+	wasteOverhead: number;
+	labor?: number;
+	total: number;
+	currency: string;
 }

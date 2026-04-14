@@ -3,6 +3,9 @@ import type {
 	PanelGeometry,
 	DiffusionRange,
 	HelmholtzResult,
+	PanelCell,
+	Sequence1D,
+	Sequence2D,
 } from "../types/types";
 import { PanelBuilder } from "./panelBuilder";
 import {
@@ -11,9 +14,7 @@ import {
 } from "../math/helmholtz";
 
 export class HelmholtzAbsorberBuilder extends PanelBuilder<AbsorberParams> {
-	public generateSequence():
-		| import("../types/types").Sequence1D
-		| import("../types/types").Sequence2D {
+	public generateSequence(): Sequence1D | Sequence2D {
 		// Helmholtz resonators don't have a sequence - they're uniform across the surface
 		return {
 			values: [],
@@ -21,11 +22,7 @@ export class HelmholtzAbsorberBuilder extends PanelBuilder<AbsorberParams> {
 		};
 	}
 
-	public buildGeometry(
-		sequence:
-			| import("../types/types").Sequence1D
-			| import("../types/types").Sequence2D,
-	): PanelGeometry {
+	public buildGeometry(sequence: Sequence1D | Sequence2D): PanelGeometry {
 		const {
 			cavityDepth,
 			holeDiameter,
@@ -77,7 +74,9 @@ export class HelmholtzAbsorberBuilder extends PanelBuilder<AbsorberParams> {
 		const wavelength = speedOfSound / designFrequency;
 
 		// Generate cell positions - uniform coverage for Helmholtz absorber
-		const cells: import("../types/types").PanelCell[] = [];
+		const cells: PanelCell[] = [];
+		const wallThickness = this.calculateWallThickness();
+		const kerfOffset = this.getKerfOffset();
 
 		// Create a grid of cells covering the dimensions
 		const rows = Math.ceil(dimensions.height / cellSize);
@@ -85,24 +84,33 @@ export class HelmholtzAbsorberBuilder extends PanelBuilder<AbsorberParams> {
 
 		for (let i = 0; i < rows; i++) {
 			for (let j = 0; j < cols; j++) {
-				const cellX = j * cellSize;
-				const cellY = i * cellSize;
+				const cellX = j * cellSize + kerfOffset / 2;
+				const cellY = i * cellSize + kerfOffset / 2;
 
 				cells.push({
 					x: cellX,
 					y: cellY,
-					width: cellSize,
-					height: cellSize,
+					width: cellSize - wallThickness,
+					height: cellSize - wallThickness,
 					depth: cavityDepth, // Helmholtz absorber depth is uniform
+					wallLeft: cellX,
+					wallRight: cellX + (cellSize - wallThickness),
+					wallTop: cellY,
+					wallBottom: cellY + (cellSize - wallThickness),
+					backingThickness: this.params.backingPlateThickness,
+					frameProfile: this.params.edgeFrameProfile,
+					kerfOffset: kerfOffset,
 				});
 			}
 		}
 
-		// Calculate bounding box
+		// Calculate bounding box with construction features
+		const backingThickness = this.params.backingPlateThickness || 0;
+		const maxDepth = Math.max(cavityDepth, backingThickness);
 		const boundingBox = {
 			width: dimensions.width,
 			height: dimensions.height,
-			depth: cavityDepth,
+			depth: maxDepth,
 		};
 
 		return {
@@ -111,6 +119,10 @@ export class HelmholtzAbsorberBuilder extends PanelBuilder<AbsorberParams> {
 			metadata: {
 				diffusion: this.getDiffusionRange(helmholtzResult),
 				prd: helmholtzResult,
+				wallThickness: wallThickness,
+				backingPlateThickness: backingThickness,
+				edgeFrameProfile: this.params.edgeFrameProfile,
+				kerf: kerfOffset,
 			},
 		};
 	}

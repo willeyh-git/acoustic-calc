@@ -58,27 +58,33 @@ export class QrdBuilder extends PanelBuilder<QrdParams> {
 
 		// Generate cell positions based on QRD layout
 		const cells: PanelCell[] = [];
+		const wallThickness = this.calculateWallThickness();
+		const kerfOffset = this.getKerfOffset();
 
 		for (let i = 0; i < prime; i++) {
-			const cellX = i * wellWidth;
+			const cellX = i * wellWidth + kerfOffset / 2;
 
 			cells.push({
 				x: cellX,
 				y: 0, // Single row for QRD
-				width: wellWidth,
-				height: wellWidth,
+				width: wellWidth - wallThickness,
+				height: wellWidth - wallThickness,
 				depth: depths[i] || 0,
 				wallLeft: cellX,
-				wallRight: cellX + wellWidth,
+				wallRight: cellX + (wellWidth - wallThickness),
+				backingThickness: this.params.backingPlateThickness,
+				frameProfile: this.params.edgeFrameProfile,
+				kerfOffset: kerfOffset,
 			});
 		}
 
-		// Calculate bounding box
+		// Calculate bounding box with construction features
 		const totalSize = prime * wellWidth;
+		const backingThickness = this.params.backingPlateThickness || 0;
 		const boundingBox = {
 			width: totalSize,
 			height: wellWidth,
-			depth: maxDepth || 0,
+			depth: maxDepth || backingThickness || 0,
 		};
 
 		return {
@@ -86,6 +92,10 @@ export class QrdBuilder extends PanelBuilder<QrdParams> {
 			boundingBox,
 			metadata: {
 				diffusion: this.getDiffusionRange(),
+				wallThickness: wallThickness,
+				backingPlateThickness: backingThickness,
+				edgeFrameProfile: this.params.edgeFrameProfile,
+				kerf: kerfOffset,
 			},
 		};
 	}

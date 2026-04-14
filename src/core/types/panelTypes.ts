@@ -13,6 +13,12 @@ export interface BasePanelParams {
 
 	withBacking?: boolean;
 	withFrame?: boolean;
+
+	// Construction features (Step 2)
+	wallThickness?: number; // Default: 3mm
+	backingPlateThickness?: number; // Optional backing plate
+	edgeFrameProfile?: FrameProfile; // 'square' | 'round' | 'flat'
+	kerf?: number; // Cutting tolerance (default: 0.5mm)
 }
 
 export interface QrdParams extends BasePanelParams {
@@ -27,6 +33,11 @@ export interface QrdParams extends BasePanelParams {
 
 	wallThickness?: number;
 	flapThickness?: number;
+
+	// Construction features (Step 2)
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
 }
 
 export interface SkylineParams extends BasePanelParams {
@@ -39,6 +50,11 @@ export interface SkylineParams extends BasePanelParams {
 	wellWidth: number;
 	maxDepth?: number;
 	speedOfSound?: number;
+
+	// Construction features (Step 2)
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
 }
 
 export interface AbfusorParams extends BasePanelParams {
@@ -47,6 +63,12 @@ export interface AbfusorParams extends BasePanelParams {
 	pattern?: number[]; // binary (0/1)
 	depthA: number;
 	depthB: number;
+
+	// Construction features (Step 2)
+	wallThickness?: number;
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
 }
 
 export interface AbsorberParams extends BasePanelParams {
@@ -57,6 +79,12 @@ export interface AbsorberParams extends BasePanelParams {
 	cavityDepth?: number;
 	holeDiameter?: number;
 	holeSpacing?: number;
+
+	// Construction features (Step 2)
+	wallThickness?: number;
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
 }
 
 export type PanelParams =
@@ -66,7 +94,7 @@ export type PanelParams =
 	| AbsorberParams;
 
 // Type-specific validation interfaces (for backward compatibility)
-export interface QrdParams extends BasePanelParams {
+export interface QrdValidationParams extends BasePanelParams {
 	type: "qrd";
 	prime: number;
 	designFrequency: number;
@@ -75,9 +103,12 @@ export interface QrdParams extends BasePanelParams {
 	maxDepth?: number;
 	wallThickness?: number;
 	flapThickness?: number;
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
 }
 
-export interface SkylineParams extends BasePanelParams {
+export interface SkylineValidationParams extends BasePanelParams {
 	type: "skyline";
 	gridSize: number;
 	prime: number;
@@ -85,4 +116,30 @@ export interface SkylineParams extends BasePanelParams {
 	speedOfSound?: number;
 	wellWidth: number;
 	maxDepth?: number;
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
+}
+
+export interface AbfusorValidationParams extends BasePanelParams {
+	type: "abfusor";
+	pattern?: number[];
+	depthA: number;
+	depthB: number;
+	wallThickness?: number;
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
+}
+
+export interface AbsorberValidationParams extends BasePanelParams {
+	type: "absorber";
+	absorberType: "porous" | "helmholtz";
+	cavityDepth?: number;
+	holeDiameter?: number;
+	holeSpacing?: number;
+	wallThickness?: number;
+	backingPlateThickness?: number;
+	edgeFrameProfile?: FrameProfile;
+	kerf?: number;
 }

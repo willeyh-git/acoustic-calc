@@ -46,29 +46,39 @@ export class SkylineBuilder extends PanelBuilder<SkylineParams> {
 
 		// Generate cell positions based on grid layout
 		const cells: PanelCell[] = [];
+		const wallThickness = this.calculateWallThickness();
+		const kerfOffset = this.getKerfOffset();
 
 		for (let i = 0; i < gridSize; i++) {
 			for (let j = 0; j < gridSize; j++) {
 				// Calculate cell position in the grid
-				const cellX = j * wellWidth;
-				const cellY = i * wellWidth;
+				const cellX = j * wellWidth + kerfOffset / 2;
+				const cellY = i * wellWidth + kerfOffset / 2;
 
 				cells.push({
 					x: cellX,
 					y: cellY,
-					width: wellWidth,
-					height: wellWidth,
-					depth: maxDepth || 0,
+					width: wellWidth - wallThickness,
+					height: wellWidth - wallThickness,
+					depth: depths[i][j] || maxDepth || 0,
+					wallLeft: cellX,
+					wallRight: cellX + (wellWidth - wallThickness),
+					wallTop: cellY,
+					wallBottom: cellY + (wellWidth - wallThickness),
+					backingThickness: this.params.backingPlateThickness,
+					frameProfile: this.params.edgeFrameProfile,
+					kerfOffset: kerfOffset,
 				});
 			}
 		}
 
-		// Calculate bounding box
+		// Calculate bounding box with construction features
 		const totalSize = gridSize * wellWidth;
+		const backingThickness = this.params.backingPlateThickness || 0;
 		const boundingBox = {
 			width: totalSize,
 			height: totalSize,
-			depth: maxDepth || 0,
+			depth: maxDepth || backingThickness || 0,
 		};
 
 		return {
@@ -76,6 +86,10 @@ export class SkylineBuilder extends PanelBuilder<SkylineParams> {
 			boundingBox,
 			metadata: {
 				diffusion: this.getDiffusionRange(),
+				wallThickness: wallThickness,
+				backingPlateThickness: backingThickness,
+				edgeFrameProfile: this.params.edgeFrameProfile,
+				kerf: kerfOffset,
 			},
 		};
 	}

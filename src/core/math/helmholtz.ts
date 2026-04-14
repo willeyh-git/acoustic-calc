@@ -1,5 +1,10 @@
 import { DEFAULT_SPEED_OF_SOUND } from "../helpers";
-import type { DiffusionRange, Material, Dimensions } from "../types/types";
+import type {
+	DiffusionRange,
+	Material,
+	Dimensions,
+	HelmholtzResult,
+} from "../types/types";
 
 /**
  * Helmholtz Resonator Math Module
@@ -277,7 +282,7 @@ export function computeHelmholtzResonator(params: {
 	neckDiameter?: number;
 	targetFrequency?: number;
 	speedOfSound?: number;
-}): import("../types/types").HelmholtzResult {
+}): HelmholtzResult {
 	const {
 		neckArea,
 		cavityVolume,
@@ -334,9 +339,7 @@ export function computeHelmholtzResonator(params: {
 /**
  * Validate Helmholtz resonator results.
  */
-export function validateHelmholtzResonatorResults(
-	result: import("../types/types").HelmholtzResult,
-): {
+export function validateHelmholtzResonatorResults(result: HelmholtzResult): {
 	valid: boolean;
 	errors: string[];
 	warnings?: string[];

@@ -1,5 +1,10 @@
 import { DEFAULT_SPEED_OF_SOUND } from "../helpers";
-import type { DiffusionRange, Material, Dimensions } from "../types/types";
+import type {
+	DiffusionRange,
+	Material,
+	Dimensions,
+	PorousResult,
+} from "../types/types";
 
 /**
  * Porous Absorber Math Module
@@ -247,7 +252,7 @@ export function computePorousAbsorber(params: {
 	porosity?: number;
 	density?: number;
 	speedOfSound?: number;
-}): import("../types/types").PorousResult {
+}): PorousResult {
 	const {
 		frequency,
 		thickness,
@@ -301,9 +306,7 @@ export function computePorousAbsorber(params: {
 /**
  * Validate porous absorber results.
  */
-export function validatePorousAbsorberResults(
-	result: import("../types/types").PorousResult,
-): {
+export function validatePorousAbsorberResults(result: PorousResult): {
 	valid: boolean;
 	errors: string[];
 	warnings?: string[];

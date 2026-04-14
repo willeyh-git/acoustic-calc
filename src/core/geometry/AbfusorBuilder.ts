@@ -44,25 +44,31 @@ export class AbfusorBuilder extends PanelBuilder<AbfusorParams> {
 
 		// Generate cell positions based on binary pattern layout
 		const cells: PanelCell[] = [];
+		const wallThickness = this.calculateWallThickness();
+		const kerfOffset = this.getKerfOffset();
 
 		for (let i = 0; i < sequence.modulus; i++) {
-			const cellX = i * this.params.cellSize;
+			const cellX = i * this.params.cellSize + kerfOffset / 2;
 			const value = sequence.values[i];
 
 			cells.push({
 				x: cellX,
 				y: 0, // Single row for Abfusor
-				width: this.params.cellSize,
-				height: this.params.cellSize,
+				width: this.params.cellSize - wallThickness,
+				height: this.params.cellSize - wallThickness,
 				depth:
 					value === 1 ? abfusorResult.depthsA[i] : abfusorResult.depthsB[i],
 				wallLeft: cellX,
-				wallRight: cellX + this.params.cellSize,
+				wallRight: cellX + (this.params.cellSize - wallThickness),
+				backingThickness: this.params.backingPlateThickness,
+				frameProfile: this.params.edgeFrameProfile,
+				kerfOffset: kerfOffset,
 			});
 		}
 
-		// Calculate bounding box
+		// Calculate bounding box with construction features
 		const totalSize = sequence.modulus * this.params.cellSize;
+		const backingThickness = this.params.backingPlateThickness || 0;
 		const maxDepth = Math.max(
 			...abfusorResult.depthsA,
 			...abfusorResult.depthsB,
@@ -70,7 +76,7 @@ export class AbfusorBuilder extends PanelBuilder<AbfusorParams> {
 		const boundingBox = {
 			width: totalSize,
 			height: this.params.cellSize,
-			depth: maxDepth,
+			depth: Math.max(maxDepth, backingThickness) || 0,
 		};
 
 		return {
@@ -78,6 +84,10 @@ export class AbfusorBuilder extends PanelBuilder<AbfusorParams> {
 			boundingBox,
 			metadata: {
 				diffusion: abfusorResult.diffusionRange,
+				wallThickness: wallThickness,
+				backingPlateThickness: backingThickness,
+				edgeFrameProfile: this.params.edgeFrameProfile,
+				kerf: kerfOffset,
 			},
 		};
 	}
